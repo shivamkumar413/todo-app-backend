@@ -1,7 +1,8 @@
-import { userRepository } from "../repository/user.repository";
+import { userRepository } from "../repository/user.repository.js";
 import User from "../schema/user.schema.js";
 import bcrypt from 'bcrypt'
 import ClientError from './../utils/errors/ClientError.js'
+import ValidationError from './../utils/errors/ValidationError.js'
 import { StatusCodes } from "http-status-codes";
 import { generateToken } from "../utils/authUtils/generateToken.js";
 
@@ -9,6 +10,7 @@ export const signUpService = async({email,username,password})=>{
 
     try {
         const user = await userRepository.create({email,username,password});
+        console.log("user at signup service : ",user);
         return user;
     } catch (error) {
         console.log("Error while creating user : ",error);
@@ -18,14 +20,15 @@ export const signUpService = async({email,username,password})=>{
                 explanation : 'Try using different email or username'
             });
         }
+        throw error;
     }
 
 }
 
 export const siginService = async({email,password})=>{
     try {
-        const user = await User.find({email : email});
-
+        const user = await User.findOne({email : email});
+        console.log("user at sign in service : ",user)
         if(!user){
             return new ClientError({
                 message : 'User not found',
@@ -34,9 +37,9 @@ export const siginService = async({email,password})=>{
             })
         }
 
-        const isPaaswordMatch = bcrypt.compare(password,user.password);
+        const isPasswordMatch = bcrypt.compare(password,user.password);
 
-        if(!isPaaswordMatch){
+        if(!isPasswordMatch){
             return new ClientError({
                 message : "password don't match",
                 explanation : "Try again with different password",
@@ -44,10 +47,19 @@ export const siginService = async({email,password})=>{
             })
         }
 
-        const {accessToken , refreshToken} = generateToken()
+        const {accessToken,refreshToken} = generateToken(
+            {
+                userId : user?._id,
+                userName : user?.username,
+                email : user?.email
+            }
+        )
+
+        console.log("access token : ",accessToken);
+        console.log("refresh token : ",refreshToken);
 
         user.refreshToken = refreshToken;
-        await user.save()
+        await user.save();
         return{
             accessToken : accessToken,
             refreshToken : refreshToken,

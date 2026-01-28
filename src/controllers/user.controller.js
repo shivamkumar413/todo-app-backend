@@ -4,11 +4,17 @@ import { customErrorRepsponse, customSuccessResponse, internalServerErrorRespons
 
 export async function signupController(req,res){
     try {
-        const response = await signUpService();
+        const response = await signUpService({
+            email : req.body.email,
+            username : req.body.username,
+            password : req.body.password
+        });
+
+        console.log("Response at user signup controller : ",response);
 
         return res
             .status(StatusCodes.CREATED)
-            .json(customSuccessResponse(response,"User signed in successfully"))
+            .json(customSuccessResponse(response,"User signed up successfully"))
     } catch (error) {
         console.log("Error while signing up new user : ",error)
         if(error.statusCode){

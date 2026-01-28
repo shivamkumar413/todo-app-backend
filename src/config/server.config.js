@@ -4,7 +4,9 @@ dotenv.config();
 
 export const PORT = process.env.PORT || 3000;
 
-export const SALT = process.env.PORT;
+export const SALT = process.env.SALT;
+
+export const DB_URL = process.env.DB_URL;
 
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
