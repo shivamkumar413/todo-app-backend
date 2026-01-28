@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from 'bcrypt';
-import { SALT } from "../config/server.config";
+import { SALT } from "../config/server.config.js";
 
 const userSchema = new mongoose.Schema(
     {
@@ -29,21 +29,30 @@ const userSchema = new mongoose.Schema(
         },
         refreshToken : {
             type : String,
-        }
+        },
+        role : {
+            type : String,
+            enum : ["user","admin"],
+            default : "user"
+        },
+        tasks : [
+            {
+                type : mongoose.Schema.Types.ObjectId,
+                ref : "Task"
+            }
+        ]
     },
     {
         timestamps : true
     }
 )
 
-userSchema.pre("save",async function(next){
-    if(!this.isModified("password")) return next()
+userSchema.pre("save",async function(){
+    if(!this.isModified("password")) return;
 
-    this.password = await bcrypt.hash(this.password,SALT);
-    next()
+    this.password = await bcrypt.hash(this.password,5);
+    
 })
-
-
 
 const User = mongoose.model('User',userSchema);
 

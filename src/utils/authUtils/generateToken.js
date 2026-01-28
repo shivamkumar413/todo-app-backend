@@ -1,8 +1,13 @@
 import jwt from 'jsonwebtoken'
-import { ACCESS_TOKEN_EXPIRY, ACCESS_TOKEN_SECRET } from '../../config/server.config.JS'
-import { REFRESH_TOKEN_EXPIRY, REFRESH_TOKEN_SECRET } from '../../config/server.config'
+import {
+        ACCESS_TOKEN_EXPIRY,
+        ACCESS_TOKEN_SECRET,
+        REFRESH_TOKEN_EXPIRY,
+        REFRESH_TOKEN_SECRET 
+    } from '../../config/server.config.js'
 
-export async function generateToken({userId,email,userName}){
+
+export function generateToken({userId,email,userName}){
     const accessToken = jwt.sign(
         {
             userId : userId,
@@ -21,11 +26,11 @@ export async function generateToken({userId,email,userName}){
         {expiresIn : REFRESH_TOKEN_EXPIRY}
     )
 
-    
-    
+    console.log("token at gttoken : ",accessToken,refreshToken)
+
     return {
-        accessToken,
-        refreshToken,
+        accessToken : accessToken,
+        refreshToken : refreshToken,
     }
 
 }
