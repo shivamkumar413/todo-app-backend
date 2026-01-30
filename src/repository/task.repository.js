@@ -4,7 +4,7 @@ import User from "../schema/user.schema.js";
 export const taskRepository = {
 
     getAllTask : async (userId)=>{
-        const tasks = await User.findById(userId).populate('tasks')
+        const tasks = await User.findById(userId).populate('tasks').select("tasks")
         return tasks;
     },
     create : async (data)=>{

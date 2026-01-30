@@ -4,12 +4,17 @@ import cookieParser from 'cookie-parser';
 import apiRouter from './routes/index.js'
 import { connectDB } from './config/db.config.js';
 import { isAuthenticated } from './middlewares/auth.middlewares.js';
+import cors from 'cors'
 
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser())
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}))
 
 app.use('/api',apiRouter);
 

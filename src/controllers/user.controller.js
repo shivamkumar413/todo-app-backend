@@ -1,6 +1,7 @@
 import { StatusCodes } from "http-status-codes";
 import { siginService, signUpService } from "../services/user.service.js";
 import { customErrorRepsponse, customSuccessResponse, internalServerErrorResponse } from "../utils/customResponse/customResponse.js";
+import { userRepository } from "../repository/user.repository.js";
 
 export async function signupController(req,res){
     try {
@@ -30,7 +31,7 @@ export async function signupController(req,res){
 
 export async function signInController(req,res){
     try {
-        const {accessToken,refreshToken,user} = await siginService({
+        const {accessToken,refreshToken,updatedUser} = await siginService({
             email : req.body.email,
             password : req.body.password
         });
@@ -40,14 +41,14 @@ export async function signInController(req,res){
             .cookie('accessToken',accessToken,{
                 httpOnly : true,
                 expires : new Date(Date.now() + 24 * 3600000),
-                sameSite : 'Strict'
+                sameSite : 'lax'
             })
             .cookie('refreshToken',refreshToken,{
                 httpOnly : true,
                 expires : new Date(Date.now() + 10 * 24 * 3600000),
                 sameSite : 'Strict'
             })
-            .json(customSuccessResponse(user,"User signed in successfully"));
+            .json(customSuccessResponse(updatedUser,"User signed in successfully"));
     } catch (error) {
         console.log("Error while signing in user controller : ",error);
         if(error.statusCode){
@@ -58,5 +59,27 @@ export async function signInController(req,res){
         return res
             .status(StatusCodes.INTERNAL_SERVER_ERROR)
             .json(internalServerErrorResponse(error))
+    }
+}
+
+export async function logoutController(req,res){
+    try {
+        const user = await userRepository.findById(req?.user);
+
+        res.clearCookie('accessToken')
+        res.clearCookie('refreshToken')
+
+        user.refreshToken = undefined;
+        await user.save()
+
+        return res
+            .status(StatusCodes.OK)
+            .json({
+                message : "Successfully logout user"
+        })
+
+    } catch (error) {
+        console.log("Error while logging out user : ",error);
+        throw error;
     }
 }

@@ -2,6 +2,8 @@ import { StatusCodes } from "http-status-codes";
 import { taskRepository } from "../repository/task.repository.js";
 import ClientError from "../utils/errors/ClientError.js";
 import { userRepository } from "../repository/user.repository.js";
+import User from "../schema/user.schema.js";
+import Task from "../schema/task.schema.js";
 
 export const createTaskService = async ({name,description,userId})=>{
     try {
@@ -22,8 +24,13 @@ export const createTaskService = async ({name,description,userId})=>{
                 statusCode : StatusCodes.UNAUTHORIZED,
             })
         }
-
-        const response = await taskRepository.create({name,description});
+        
+        const response = await taskRepository.create({name,description,userId});
+        await User.findByIdAndUpdate(userId,{
+            $push : {
+                tasks : response?._id
+            }
+        })
         return response;
     } catch (error) {
         console.log("Error while creating new task : ",error);
@@ -65,7 +72,7 @@ export const updateTaskService = async ({userId,taskId,data})=>{
             })
         }
 
-        const task = await taskRepository.findById(taskId);
+        const task = await Task.findById(taskId);
 
         if(!task){
             return new ClientError({
@@ -98,7 +105,7 @@ export const deleteTaskServiceById = async({userId,taskId})=>{
             })
         }
 
-        const task = await taskRepository.findById(taskId);
+        const task = await Task.findById(taskId);
 
         if(!task){
             return new ClientError({

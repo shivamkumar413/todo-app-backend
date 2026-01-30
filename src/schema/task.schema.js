@@ -13,6 +13,10 @@ const taskSchema = new mongoose.Schema(
             type : String,
             enum : ['Done','Going','Not Done'],
             default : 'Not Done'
+        },
+        userId : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "User"
         }
     },
     {timestamps : true}

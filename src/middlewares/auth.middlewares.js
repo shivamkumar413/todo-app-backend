@@ -8,6 +8,11 @@ export async function isAuthenticated(req,res,next){
     try {
         const accessToken = req.cookies.accessToken;
 
+        
+        // console.log("At is authenticated ");
+        // console.log(accessToken)
+        // console.log("request : ",req)
+        // console.log("all cookies : ",req.cookies)
         if(!accessToken){
             return res.status(StatusCodes.FORBIDDEN).json(
                 customErrorRepsponse({
