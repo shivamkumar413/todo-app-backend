@@ -60,10 +60,11 @@ export const siginService = async({email,password})=>{
 
         user.refreshToken = refreshToken;
         await user.save();
+        const updatedUser = await User.findOne({email : email}).select("-password -refreshToken -tasks")
         return{
             accessToken : accessToken,
             refreshToken : refreshToken,
-            user,
+            updatedUser,
         }
     } catch (error) {
         console.log("Error while signing in user : ",error);

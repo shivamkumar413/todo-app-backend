@@ -34,7 +34,7 @@ export const getAllTaskController = async(req,res)=>{
 
         return res
             .status(StatusCodes.OK)
-            .customSuccessResponse(response,"Fetched all tasks successfully");
+            .json(customSuccessResponse(response,"Fetched all tasks successfully"));
     } catch (error) {
         console.log("Error while getting all task at controller : ",error);
         if(error.statusCode){
@@ -58,7 +58,7 @@ export const updateTaskController = async (req,res)=>{
 
         return res
             .status(StatusCodes.OK)
-            .customSuccessResponse(response,"Updated task successfully");
+            .json(customSuccessResponse(response,"Updated task successfully"));
     } catch (error) {
         console.log("Error while updating task at controller : ",error);
         if(error.statusCode){
@@ -81,7 +81,7 @@ export const deleteTaskByIdController = async(req,res)=>{
 
         return res
             .status(StatusCodes.NO_CONTENT)
-            .customSuccessResponse(response,"Deleted task successfully");
+            .json(customSuccessResponse(response,"Deleted task successfully"));
     } catch (error) {
         console.log("Error while deleting task at controller : ",error);
         if(error.statusCode){
@@ -104,7 +104,7 @@ export const deleteManyTaskController = async(req,res)=>{
 
         return res
             .status(StatusCodes.NO_CONTENT)
-            .customSuccessResponse(response,"Deleted many task successfully");
+            .json(customSuccessResponse(response,"Deleted many task successfully"));
     } catch (error) {
         console.log("Error while deleting many task at controller : ",error);
         if(error.statusCode){
